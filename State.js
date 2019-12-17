@@ -1,10 +1,13 @@
 
 class State {
+    //TODO have constructor create nested _subjects to be observered to avoid state change madness
     constructor(initState) {
         this.state = initState;
         this.observers = [];
         this.getState = this.getState.bind(this);
         this.updateState = this.updateState.bind(this);
+        this.addObserver = this.addObserver.bind(this);
+        this.removeObserver = this.removeObserver.bind(this);
     }
 
     getState() {
@@ -12,7 +15,7 @@ class State {
     }
 
     updateState(newState) {
-        this.state = Object.assign({}, this.state, newState);
+        this.state = newState;
         this.updateObservers(newState);
     }
 

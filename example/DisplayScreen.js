@@ -1,17 +1,23 @@
-class DisplayScreen extends Screen {
-    constructor(div, state) {
-        super(div, state);
+class DisplayScreen extends DynamicScreen {
+    constructor(parent, state) {
+        super(parent, state);
+        this.updateCount = this.updateCount.bind(this);
     }
 
-
-    onStateChange(state) {
-        if (state.count >= 0) {
-            this.DOM.innerHTML = getCountString(state.count);
-        }
+    observers() {
+        this.createObserver(this.state.countState.addObserver, this.state.countState.removeObserver, this.updateCount)
     }
 
-}
+    updateCount() {
+        this.reRender();
+    }
 
-function getCountString(count) {
-    return `<span> The count is ${count}</span>`
+    render() {
+        return(
+            `
+            <span> The count is ${this.state.countState.getState()}</span>\
+            `
+        )
+    }
+
 }

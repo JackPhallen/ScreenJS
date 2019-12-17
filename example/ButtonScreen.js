@@ -1,15 +1,28 @@
-class ButtonScreen extends Screen {
-    constructor(div, state) {
-        super(div, state);
+const styleSheet = {
+    self: {
+        'margin': '20px',
+        'background-color': 'green'
+    }
+};
+
+class ButtonScreen extends DynamicScreen {
+    constructor(parent, state) {
+        super(parent, state);
+        console.log("not loaded yet");
     }
 
     onIncrement() {
-        this.state.updateState({count: this.state.getState().count + 1})
+        this.state.countState.updateState(this.state.countState.getState() + 1);
     }
 
     listeners() {
         this.createListener(document.getElementById('counterButton'),
             "click", this.onIncrement.bind(this));
+    }
+
+    onLoad() {
+        console.log("now im loaded!");
+        console.log("this function is called after the subclass constructor finishes!")
     }
 
 

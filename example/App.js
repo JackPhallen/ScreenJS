@@ -1,10 +1,19 @@
-class App extends Screen {
-    constructor(div, state) {
-        super(div, state);
+
+
+class App extends DynamicScreen {
+    constructor(parent, state) {
+        super(parent, state);
+        this.title = "Example";
+        this.updateView = this.updateView.bind(this);
     }
 
+
     onShow() {
-        this.state.updateState({show: !this.state.getState().show});
+        this.state.showState.updateState(!this.state.showState.getState());
+    }
+
+    observers() {
+        this.createObserver(this.state.showState.addObserver, this.state.showState.removeObserver, this.updateView)
     }
 
 
@@ -12,16 +21,21 @@ class App extends Screen {
         this.createListener(document.getElementById('show'), "click", this.onShow.bind(this));
     }
 
+    onLoad() {
+        this.addChild(ButtonScreen, document.getElementById("buttonscreen"));
+        this.addChild(DisplayScreen);
+    }
 
-    onStateChange(state) {
-        if (state.show === true) {
+
+    updateView(doShow) {
+        if (doShow) {
             document.getElementById('show').innerHTML = "Hide";
-            this.addChild('buttonCont', ButtonScreen);
-            this.addChild('displayCont', DisplayScreen);
-        } else if (state.show === false) {
+            this.addChild(ButtonScreen, document.getElementById("buttonscreen"));
+            this.addChild(DisplayScreen);
+        } else {
             document.getElementById('show').innerHTML = "Show";
-            this.removeChild('buttonCont');
-            this.removeChild('displayCont');
+            this.removeChild(this.DOM);
+            this.removeChild(document.getElementById("buttonscreen"))
         }
     }
 
@@ -29,10 +43,9 @@ class App extends Screen {
     render() {
         return(
             `
-            <h2> Example </h2>
-            <button id="show"></button>
-            <div id="buttonCont"></div>
-            <div id="displayCont"></div>
+            <h2 class="title"> ${this.title} </h2>
+            <button class ="test" id="show">Hide</button>
+            <div id="buttonscreen"></div>
             `
         )
     }
