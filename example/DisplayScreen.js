@@ -5,15 +5,11 @@ class DisplayScreen extends Screen {
 
 
     onStateChange(state) {
-        if (state.count) {
+        if (state.count >= 0) {
             this.DOM.innerHTML = getCountString(state.count);
         }
     }
 
-
-    render() {
-        return( getCountString(this.state.getState().count))
-    }
 }
 
 function getCountString(count) {

@@ -1,7 +1,6 @@
 class App extends Screen {
     constructor(div, state) {
         super(div, state);
-        this.onShow = this.onShow.bind(this);
     }
 
     onShow() {
@@ -9,19 +8,18 @@ class App extends Screen {
     }
 
 
-    createListeners() {
-        document.getElementById('show').addEventListener("click", () => this.onShow());
+    listeners() {
+        this.createListener(document.getElementById('show'), "click", this.onShow.bind(this));
     }
 
-    removeListeners() {
-        document.getElementById('show').removeEventListener("click", () => this.onShow())
-    }
 
     onStateChange(state) {
         if (state.show === true) {
+            document.getElementById('show').innerHTML = "Hide";
             this.addChild('buttonCont', ButtonScreen);
             this.addChild('displayCont', DisplayScreen);
         } else if (state.show === false) {
+            document.getElementById('show').innerHTML = "Show";
             this.removeChild('buttonCont');
             this.removeChild('displayCont');
         }
@@ -32,7 +30,7 @@ class App extends Screen {
         return(
             `
             <h2> Example </h2>
-            <button id="show">show counter</button>
+            <button id="show"></button>
             <div id="buttonCont"></div>
             <div id="displayCont"></div>
             `

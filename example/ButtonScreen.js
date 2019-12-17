@@ -1,20 +1,17 @@
 class ButtonScreen extends Screen {
     constructor(div, state) {
         super(div, state);
-        this.onIncrement = this.onIncrement.bind(this);
     }
 
     onIncrement() {
         this.state.updateState({count: this.state.getState().count + 1})
     }
 
-    createListeners() {
-        document.getElementById('counterButton').addEventListener("click", () => this.onIncrement());
+    listeners() {
+        this.createListener(document.getElementById('counterButton'),
+            "click", this.onIncrement.bind(this));
     }
 
-    removeListeners() {
-        document.getElementById('counterButton').removeEventListener("click", () => this.onIncrement())
-    }
 
     render() {
         return(

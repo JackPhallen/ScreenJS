@@ -20,7 +20,8 @@ class Screen {
         // Render content returned by render()
         this._updateDom(this.render());
         // Initiate event listeners in function createListeners()
-        this.createListeners();
+        this.eventListeners = [];
+        this._initListeners();
         this.children = {};
         this.onStateChange = this.onStateChange.bind(this);
         // Register this as observer so that this.onStateChange is called on state change
@@ -47,10 +48,10 @@ class Screen {
      * @memberof Screen
      */
     destroy() {
-        this.removeListeners();
+        this._removeListeners();
+        this.state.removeObserver(this.onStateChange);
         Object.keys(this.children).forEach( child => this.removeChild(child) );
         this._renderHTMLString("");
-        this.state.removeObserver(this.onStateChange);
     }
 
     /**
@@ -59,7 +60,7 @@ class Screen {
      * @memberof Screen
      */
     render() {
-        throw new TypeError("Must override method");
+        // throw new TypeError("Must override method");
         /* Example of String render*/
         // return (
         //     `
@@ -82,25 +83,53 @@ class Screen {
     onStateChange(newState) {}
 
     /**
+     * Creates event listeners from listeners()
+     * @private
+     */
+    _initListeners() {
+        this.listeners();
+        this.eventListeners.forEach(listener => {
+            listener.element.addEventListener(listener.action, listener.callback);
+        });
+    }
+
+    /**
+     * Called by destroy(), removes event listeners
+     *
+     * @memberof Screen
+     */
+    _removeListeners() {
+        this.eventListeners.forEach( listener => {
+            listener.element.removeEventListener(listener.action, listener.callback);
+        });
+    }
+
+    /**
      * Called by constructor(), override to include event listener bindings 
      *
      * @memberof Screen
      */
-    createListeners() {
+    listeners() {
         /*Example*/
         // document.getElementById('button').addEventListener('click', 
         //     this.onButtonClick.bind(this), false);
     }
 
     /**
-     * Called by destroy(), override to include event listener unbindings
+     * Adds event listener to this.eventListeners to be initiated and removed with life of this
      *
-     * @memberof Screen
+     * @param element
+     * @param action
+     * @param callback
      */
-    removeListeners() {
-        /*Example*/
-        // document.getElementById('button').removeEventListener('change', this.onButtonClick);
+    createListener(element, action, callback) {
+        this.eventListeners.push({
+            element: element,
+            action: action,
+            callback: callback
+        });
     }
+
 
     /**
      *  Add child Screen instance to be displayed in this.DOM
@@ -138,6 +167,7 @@ class Screen {
      * @memberof Screen
      */
     _updateDom(HTML) {
+        if (HTML === undefined) {return;}
         if (typeof HTML === "string") {
             this._renderHTMLString(HTML);
         } else {
