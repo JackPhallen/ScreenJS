@@ -3,9 +3,11 @@
 class Screen extends Frame {
 
 
-    constructor(parent) {
-        super(parent);
+    constructor(parent, props) {
+        super(parent, props);
         this._children = [];
+        this.addChild = this.addChild.bind(this);
+        this.removeChild = this.removeChild.bind(this);
     }
 
 
@@ -15,11 +17,11 @@ class Screen extends Frame {
     }
 
 
-    addChild(screen, parent = null) {
+    addChild(screen, parent = null, props = null) {
         const appendTo = parent ? parent : this.DOM;
         this._children.push({
             parent: appendTo,
-            screen: screen.getInstance(appendTo)
+            screen: screen.getInstance(appendTo, props)
         });
     }
 
@@ -36,7 +38,7 @@ class Screen extends Frame {
 
 
     _destroyChildren() {
-        Object.keys(this._children).forEach(child => child.screen.destroy );
+        this._children.forEach(child => child.screen.destroy() );
         this._children = [];
     }
 
